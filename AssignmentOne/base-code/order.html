@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Order</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="container">
+    <!-- Header Section -->
+    <div class="header">
+        <div class="restaurant-selector">
+            <label for="restaurant-dropdown">Select Restaurant:</label>
+            <select id="restaurant-dropdown">
+                <option value="">Select a restaurant...</option>
+            </select>
+        </div>
+
+        <div class="restaurant-info" id="restaurant-info" style="display: none;">
+            <h2 id="restaurant-name">Restaurant Name</h2>
+            <div class="restaurant-details">
+                <span id="min-order">Minimum Order: $0.00</span>
+                <span id="delivery-fee">Delivery Fee: $0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Three Column Layout -->
+    <div class="main-content">
+        <!-- Left Column - Categories -->
+        <div class="categories-column">
+            <h3>Categories</h3>
+            <ul id="categories-list">
+                <!-- Categories will be populated here -->
+            </ul>
+        </div>
+
+        <!-- Middle Column - Menu -->
+        <div class="menu-column">
+            <h3>Menu</h3>
+            <div id="menu-content">
+                <!-- Menu items will be populated here -->
+            </div>
+        </div>
+
+        <!-- Right Column - Order Summary -->
+        <div class="order-column">
+            <h3>Order Summary</h3>
+            <div id="order-content">
+                <div id="order-items">
+                    <!-- Order items will be populated here -->
+                </div>
+
+                <div class="order-totals">
+                    <div class="total-line">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="total-line">
+                        <span>Delivery:</span>
+                        <span id="delivery-total">$0.00</span>
+                    </div>
+                    <div class="total-line">
+                        <span>Tax (13%):</span>
+                        <span id="tax-total">$0.00</span>
+                    </div>
+                    <div class="total-line total-final">
+                        <span>Total:</span>
+                        <span id="final-total">$0.00</span>
+                    </div>
+                </div>
+
+                <div id="order-status">
+                    <!-- Minimum order message or submit button will appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
