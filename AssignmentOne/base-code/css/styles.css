@@ -81,7 +81,7 @@ body {
 }
 
 .column.categories {
-    flex: 0 0 20%;
+    flex: 0 0 24%;
     border-right: 1px solid #444444;
     background-color: #121212;
 }
