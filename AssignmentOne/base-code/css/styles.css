@@ -51,7 +51,7 @@ body {
     justify-content: space-between;
     width: 100%;
     padding: 1rem;
-    background-color: #444444;
+    background-color: #121212;
     flex-shrink: 0;
     border-bottom: 1px solid #888888;
 }
@@ -77,6 +77,7 @@ body {
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    max-height: 70vh;
 }
 
 .column.categories {
