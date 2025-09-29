@@ -119,8 +119,7 @@ const legolas = {
                 description: "All you need for a long journey - 6 pieces of lembas, salted pork, and a flagon of wine.",
                 price: 25.99
             },
-            5: {
-                name: "Best Friends Forever",
+            5: {name: "Best Friends Forever",
                 description: "Lembas and a heavy stout.",
                 price: 6.60
             }
