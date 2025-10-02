@@ -29,10 +29,16 @@ function initializeDropDown() {
         dropDown.appendChild(option);
     }
     dropDown.addEventListener("change", () => {
+        if (dropDown.value === "") {
+            resetMainHeaders(); 
+            resetCategoryNamesList();
+            resetMenuContainer();
+            return;
+        }
         currentRestaurant = restaurants.find((r) => r.name === dropDown.value);
         resetCategoryNamesList();
         resetMenuContainer();
-        
+
         initializeMainHeaders();
         initializeCategoryAndMenu();
     })
@@ -59,23 +65,23 @@ function initializeCategoryAndMenu() {
         let categoryDiv = createMenuCategoryDiv(category);
         for (let itemID in currentRestaurant.menu[category]) {
             let itemObj = currentRestaurant.menu[category][itemID];
-            let itemDiv = createMenuItemDiv(itemObj.name);
+            let itemDiv = createMenuItemDiv(itemObj.name, itemObj.price, itemObj.description);
             categoryDiv.appendChild(itemDiv);
         }
         categoryNamesContainer.appendChild(categoryListItem);
         menuItemsContainer.appendChild(categoryDiv);
     }
-    
-    
+
+
 }
 
 /**
  * Creates a new HTML `<li>` element using the provided category name
- * 
+ *
  * The returned element is to be used in the category menu column
- * 
+ *
  * @param {string} categoryName - The name of the category
- * 
+ *
  * @returns {HTMLLIElement} The created `<li>` element
  */
 function createCategoryListItem(categoryName) {
@@ -89,19 +95,29 @@ function createCategoryListItem(categoryName) {
 
 /**
  * Creates a new `#menu-item` div using the provided arguments
- * 
+ *
  * @param menuItemName - The name of the menu item
- * 
+ * @param menuItemPrice - The price of the menu item
+ * @param menuItemDesc - The quantity of the menu item
+ *
  * @returns The created and filled `#menu-item` div
  */
-function createMenuItemDiv(menuItemName) {
-    
+function createMenuItemDiv(menuItemName, menuItemPrice, menuItemDesc) {
+
     let menuItemDiv = document.createElement("div");
     menuItemDiv.className = `menu-item`;
 
-    let innerDivHTMLText = document.createElement("p");
-    innerDivHTMLText.className = `item-info`;
-    innerDivHTMLText.textContent = menuItemName;
+    let innerDivItemName = document.createElement("p");
+    innerDivItemName.className = `item-info`;
+    innerDivItemName.textContent = menuItemName;
+    
+    let innerDivItemPrice = document.createElement("p");
+    innerDivItemPrice.className = `item-info`;
+    innerDivItemPrice.textContent = `$${menuItemPrice.toFixed(2)}`;
+    
+    let innerDivItemDesc = document.createElement("p");
+    innerDivItemDesc.className = `item-info`;
+    innerDivItemDesc.textContent = `${menuItemDesc}`;
 
     let innerDivButton = document.createElement("button");
     innerDivButton.className = `add-btn`;
@@ -111,7 +127,9 @@ function createMenuItemDiv(menuItemName) {
     buttonImage.src = "images/add.png";
     innerDivButton.appendChild(buttonImage);
 
-    menuItemDiv.appendChild(innerDivHTMLText);
+    menuItemDiv.appendChild(innerDivItemName);
+    menuItemDiv.appendChild(innerDivItemPrice);
+    menuItemDiv.appendChild(innerDivItemDesc);
     menuItemDiv.appendChild(innerDivButton);
     return menuItemDiv;
 
@@ -120,9 +138,9 @@ function createMenuItemDiv(menuItemName) {
 
 /**
  * Creates and fills a new `#menu-category` div using the provided arguments
- * 
+ *
  * @param categoryName - The name of the category
- * 
+ *
  * @returns {HTMLDivElement} The created and filled `#menu-category` div
  */
 function createMenuCategoryDiv(categoryName) {
@@ -130,14 +148,27 @@ function createMenuCategoryDiv(categoryName) {
     let rootDiv = document.createElement("div");
     rootDiv.id = `${categoryName}`;
     rootDiv.className = `menu-category`;
-    
+
     // Container Header
     let rootDivHeader = document.createElement("h4");
     rootDivHeader.className = `category-header`;
     rootDivHeader.textContent = categoryName;
-    
+
     rootDiv.appendChild(rootDivHeader);
     return rootDiv;
+}
+
+/**
+ * This functions resets all main headers to default values
+ *
+ * Main headers include all elements with `<h2 class="main-header">`
+ * Default values are the values showcased on initial page load
+ */
+function resetMainHeaders() {
+    pageHeader.textContent = "No Restaurant Selected";
+    restaurantNameHeader.textContent = "No Name";
+    minimumOrderHeader.textContent = "Minimum Order: $0"
+    deliveryFeeHeader.textContent = "Delivery Fee: $0";
 }
 
 /**
@@ -153,7 +184,6 @@ function resetCategoryNamesList() {
 function resetMenuContainer() {
     menuItemsContainer.innerHTML = "";
 }
-
 
 
 window.addEventListener("DOMContentLoaded", initializeDropDown)
