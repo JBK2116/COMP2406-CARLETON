@@ -11,8 +11,22 @@ let deliveryFeeHeader = document.getElementById("delivery-fee");
 let categoryNamesContainer = document.getElementById("category-names");
 let menuItemsContainer = document.getElementById("menu-container");
 
+let orderSummaryContainer = document.getElementById("order-items");
+
+
 // Javascript Variables
 let currentRestaurant;
+let items = [];
+let orderedItems = [];
+
+class Item {
+    constructor(name, description, price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.orderedQuantity = 0;
+    }
+}
 
 /**
  * This function initializes the drop-down element by appending 3 new options to it and
@@ -30,12 +44,17 @@ function initializeDropDown() {
     }
     dropDown.addEventListener("change", () => {
         if (dropDown.value === "") {
-            resetMainHeaders(); 
+            resetMainHeaders();
             resetCategoryNamesList();
             resetMenuContainer();
             return;
         }
         currentRestaurant = restaurants.find((r) => r.name === dropDown.value);
+
+        // clear items trackers
+        items.length = 0;
+        orderedItems.length = 0;
+
         resetCategoryNamesList();
         resetMenuContainer();
 
@@ -67,12 +86,18 @@ function initializeCategoryAndMenu() {
             let itemObj = currentRestaurant.menu[category][itemID];
             let itemDiv = createMenuItemDiv(itemObj.name, itemObj.price, itemObj.description);
             categoryDiv.appendChild(itemDiv);
+            items.push(new Item(itemObj.name, itemObj.description, itemObj.price));
         }
         categoryNamesContainer.appendChild(categoryListItem);
         menuItemsContainer.appendChild(categoryDiv);
     }
+}
 
-
+/**
+ * This function initializes the event handlers for the .order-summary container
+ */
+function initializeOrderSummary() {
+    // TODO: Implement This
 }
 
 /**
@@ -110,11 +135,11 @@ function createMenuItemDiv(menuItemName, menuItemPrice, menuItemDesc) {
     let innerDivItemName = document.createElement("p");
     innerDivItemName.className = `item-info`;
     innerDivItemName.textContent = menuItemName;
-    
+
     let innerDivItemPrice = document.createElement("p");
     innerDivItemPrice.className = `item-info`;
     innerDivItemPrice.textContent = `$${menuItemPrice.toFixed(2)}`;
-    
+
     let innerDivItemDesc = document.createElement("p");
     innerDivItemDesc.className = `item-info`;
     innerDivItemDesc.textContent = `${menuItemDesc}`;
@@ -156,6 +181,41 @@ function createMenuCategoryDiv(categoryName) {
 
     rootDiv.appendChild(rootDivHeader);
     return rootDiv;
+}
+
+/**
+ * This function adds the selected .menu-item Item to the order summary cart
+ */
+function addItemToCart() {
+    // TODO: Implement This
+}
+
+/**
+ * This helper function creates and adds an #order-item div to the #order-items container
+ *
+ * @param Item - The Item object to add
+ */
+function addOrderItemDiv(item) {
+    // TODO: Implement This
+}
+
+/**
+ * This helper function removes an #order-item div from the #order-items container
+ *
+ * @param Item - The Item object to remove
+ */
+function removeOrderItemDiv(item) {
+    // TODO: Implement This
+}
+
+/**
+ * This function updates the totals in the #order-totals container. This
+ * function is to be called when adding or removing an Item from the order summary
+ *
+ * @param Item - The Item object being added or removed
+ */
+function updateOrderTotals(Item) {
+    // TODO: Implement This
 }
 
 /**
