@@ -60,6 +60,7 @@ function initializeDropDown() {
 
         initializeMainHeaders();
         initializeCategoryAndMenu();
+        initializeOrderSummary();
     })
 }
 
@@ -79,14 +80,17 @@ function initializeMainHeaders() {
  * This function displays the categories and menu items of the current selected restaurant
  */
 function initializeCategoryAndMenu() {
+    let menuItemIndex = 0; // This maps each .menu-item div to its corresponding Item object in the list
     for (let category in currentRestaurant.menu) {
         let categoryListItem = createCategoryListItem(category);
         let categoryDiv = createMenuCategoryDiv(category);
         for (let itemID in currentRestaurant.menu[category]) {
             let itemObj = currentRestaurant.menu[category][itemID];
             let itemDiv = createMenuItemDiv(itemObj.name, itemObj.price, itemObj.description);
+            itemDiv.dataset.index = menuItemIndex.toString();
             categoryDiv.appendChild(itemDiv);
             items.push(new Item(itemObj.name, itemObj.description, itemObj.price));
+            menuItemIndex++
         }
         categoryNamesContainer.appendChild(categoryListItem);
         menuItemsContainer.appendChild(categoryDiv);
@@ -97,7 +101,14 @@ function initializeCategoryAndMenu() {
  * This function initializes the event handlers for the .order-summary container
  */
 function initializeOrderSummary() {
-    // TODO: Implement This
+    let menuItemContainers = menuItemsContainer.querySelectorAll(".menu-item");
+    menuItemContainers.forEach((container) => {
+        let addBtn = container.querySelector("img");
+        addBtn.addEventListener("click",() => {
+            let itemObj = items[container.dataset.index];
+            addOrderItemDiv(itemObj, container.dataset.index);
+        })
+    })
 }
 
 /**
@@ -119,13 +130,13 @@ function createCategoryListItem(categoryName) {
 }
 
 /**
- * Creates a new `#menu-item` div using the provided arguments
+ * Creates a new `.menu-item` div using the provided arguments
  *
  * @param menuItemName - The name of the menu item
  * @param menuItemPrice - The price of the menu item
  * @param menuItemDesc - The quantity of the menu item
  *
- * @returns The created and filled `#menu-item` div
+ * @returns The created and filled `.menu-item` div
  */
 function createMenuItemDiv(menuItemName, menuItemPrice, menuItemDesc) {
 
@@ -145,7 +156,7 @@ function createMenuItemDiv(menuItemName, menuItemPrice, menuItemDesc) {
     innerDivItemDesc.textContent = `${menuItemDesc}`;
 
     let innerDivButton = document.createElement("button");
-    innerDivButton.className = `add-btn`;
+    innerDivButton.className = `btn`;
 
     let buttonImage = document.createElement("img");
     buttonImage.alt = `add button img`;
@@ -184,19 +195,43 @@ function createMenuCategoryDiv(categoryName) {
 }
 
 /**
- * This function adds the selected .menu-item Item to the order summary cart
- */
-function addItemToCart() {
-    // TODO: Implement This
-}
-
-/**
  * This helper function creates and adds an #order-item div to the #order-items container
  *
  * @param Item - The Item object to add
+ * @param index - The index of the item in the `items` array
  */
-function addOrderItemDiv(item) {
-    // TODO: Implement This
+function addOrderItemDiv(item, index) {
+    let orderItemRootContainer = document.createElement("div");
+    orderItemRootContainer.dataset.index = index;
+    orderItemRootContainer.className = "order-item";
+
+    let orderItemDetailsContainer = document.createElement("div");
+    orderItemDetailsContainer.className = "order-item-details";
+    
+    let itemNameContainer = document.createElement("span");
+    itemNameContainer.className = "item-name";
+    itemNameContainer.textContent = `${item.name}`;
+    let itemQuantityContainer = document.createElement("span");
+    itemQuantityContainer.className = "item-quantity";
+    itemQuantityContainer.textContent = `Quantity: ${item.orderedQuantity}`;
+    let itemPriceContainer = document.createElement("span");
+    itemPriceContainer.className = "item-total";
+    itemPriceContainer.textContent = `Price: $${item.price.toFixed(2)}`;
+    
+    let removeBtn = document.createElement("button");
+    removeBtn.className = "btn remove-btn";
+    
+    let removeBtnImage = document.createElement("img");
+    removeBtnImage.alt = "item";
+    removeBtnImage.class = "order-item-image";
+    removeBtnImage.src = "images/remove.png";
+    
+    removeBtn.appendChild(removeBtnImage);
+    
+    orderItemDetailsContainer.append(itemNameContainer, itemQuantityContainer, itemPriceContainer);
+    orderItemRootContainer.append(orderItemDetailsContainer, removeBtn);
+
+    orderSummaryContainer.appendChild(orderItemRootContainer);
 }
 
 /**

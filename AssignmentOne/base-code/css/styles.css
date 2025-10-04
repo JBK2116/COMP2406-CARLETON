@@ -218,7 +218,7 @@ body {
     color: #B0B0B0;
 }
 
-.add-btn {
+.btn {
     background: #444444;
     border: 1px solid #888888;
     cursor: pointer;
@@ -227,14 +227,18 @@ body {
     transition: all 0.2s ease;
 }
 
-.add-btn:hover {
+.btn:hover {
     background-color: #888888;
 }
 
-.add-btn img {
+.btn img {
     width: 20px;
     height: 20px;
 
+}
+
+.btn.remove-btn {
+    margin-right: 1rem;
 }
 
 .validation-message {
