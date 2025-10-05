@@ -11,17 +11,17 @@ let deliveryFeeHeader = document.getElementById("delivery-fee");
 let categoryNamesContainer = document.getElementById("category-names");
 let menuItemsContainer = document.getElementById("menu-container");
 
+let validationMessageElement = document.querySelector(".validation-message");
 let orderedItemsContainer = document.getElementById("order-items");
 let subtotalElement = document.getElementById("subtotal-line");
 let deliveryFeeElement = document.getElementById("delivery-fee-line");
 let taxElement = document.getElementById("tax-line");
 let orderTotalElement = document.getElementById("order-total-line");
-
+let submitBtnElement = document.querySelector(".submit-btn");
 
 // Javascript Variables
 let currentRestaurant;
 let items = [];
-let orderedItems = [];
 let subtotal = 0;
 let deliveryFee = 0;
 let tax = 0;
@@ -50,21 +50,35 @@ function initializeDropDown() {
         dropDown.appendChild(option);
     }
     dropDown.addEventListener("change", () => {
+        let anItemOrdered = checkOrderedItem();
+
+        if (anItemOrdered) {
+            if (!confirm("Changing restaurants will clear your order. Are you sure?")) {
+                dropDown.value = currentRestaurant.name;
+                return;
+            }
+
+        }
         if (dropDown.value === "") {
+            currentRestaurant = null;
+            items.length = 0;
             resetMainHeaders();
             resetCategoryNamesList();
             resetMenuContainer();
+            clearOrderItems();
+            resetOrderTotals();
             return;
         }
         currentRestaurant = restaurants.find((r) => r.name === dropDown.value);
 
         // clear items trackers
         items.length = 0;
-        orderedItems.length = 0;
 
         resetCategoryNamesList();
         resetMenuContainer();
-
+        clearOrderItems();
+        resetOrderTotals();
+        
         initializeMainHeaders();
         initializeCategoryAndMenu();
         initializeOrderSummary();
@@ -109,13 +123,16 @@ function initializeCategoryAndMenu() {
 
 /**
  * This function initializes the event handlers for the .order-summary container
+ * It additionally initializes the submit-btn
  */
 function initializeOrderSummary() {
+    initializeSubmitBtn();
     let menuItemContainers = menuItemsContainer.querySelectorAll(".menu-item");
     menuItemContainers.forEach((container) => {
         let addBtn = container.querySelector("img");
         addBtn.addEventListener("click", () => {
             let itemObj = items[container.dataset.index];
+            itemObj.orderedQuantity += 1;
             let existingOrderItemDiv = getOrderItemDiv(container.dataset.index);
             if (existingOrderItemDiv) {
                 updateOrderItemDiv(itemObj, existingOrderItemDiv)
@@ -124,6 +141,20 @@ function initializeOrderSummary() {
             }
             updateOrderTotals(itemObj, true);
         })
+    })
+}
+
+/**
+ * This function initializes the event handler for submit btn
+ */
+function initializeSubmitBtn() {
+    submitBtnElement.addEventListener("click", () => {
+        if (subtotal > currentRestaurant.min_order) {
+            alert("Your Order Has Been Submitted")
+            location.reload();
+        } else {
+            // Do Nothing
+        }
     })
 }
 
@@ -213,7 +244,7 @@ function createMenuCategoryDiv(categoryName) {
 /**
  * This helper function creates and adds an #order-item div to the #order-items container
  * It additionally configures an event handler for its associated `remove btn`
- * 
+ *
  * @param Item - The Item object to add
  * @param index - The index of the item in the `items` array
  */
@@ -230,7 +261,6 @@ function addOrderItemDiv(Item, index) {
     itemNameContainer.textContent = `${Item.name}`;
     let itemQuantityContainer = document.createElement("span");
     itemQuantityContainer.className = "item-quantity";
-    Item.orderedQuantity += 1;
     itemQuantityContainer.textContent = `Quantity: ${Item.orderedQuantity}`;
     let itemPriceContainer = document.createElement("span");
     itemPriceContainer.className = "item-total";
@@ -250,6 +280,11 @@ function addOrderItemDiv(Item, index) {
     orderItemRootContainer.append(orderItemDetailsContainer, removeBtn);
 
     orderedItemsContainer.appendChild(orderItemRootContainer);
+
+    removeBtn.addEventListener("click", () => {
+        removeOrderItemDiv(Item, orderItemRootContainer)
+    })
+
 }
 
 /**
@@ -261,18 +296,23 @@ function addOrderItemDiv(Item, index) {
 function updateOrderItemDiv(Item, Div) {
     let quantitySpan = Div.querySelector(".item-quantity");
     let priceSpan = Div.querySelector(".item-total");
-    Item.orderedQuantity += 1;
     quantitySpan.textContent = `Quantity: ${Item.orderedQuantity}`;
     priceSpan.textContent = `Price: $${(Item.price * Item.orderedQuantity).toFixed(2)}`;
 }
 
 /**
- * This helper function removes an #order-item div from the #order-items container
- *
+ * This helper function handles removing `.order-items` from the order summary column
  * @param Item - The Item object to remove
+ * @param Div - The Div of the `.order-item`
  */
-function removeOrderItemDiv(Item) {
-    // TODO: Implement This
+function removeOrderItemDiv(Item, Div) {
+    Item.orderedQuantity -= 1;
+    if (Item.orderedQuantity === 0) {
+        Div.remove()
+    } else {
+        updateOrderItemDiv(Item, Div)
+    }
+    updateOrderTotals(Item, false);
 }
 
 /**
@@ -295,8 +335,17 @@ function updateOrderTotals(Item, add) {
 }
 
 function updateFinalOrderTotal() {
-    let finalOrderTotal = subtotal + tax + deliveryFee
+    let finalOrderTotal = subtotal + tax + deliveryFee;
     orderTotalElement.textContent = `$${finalOrderTotal.toFixed(2)}`;
+    if (subtotal >= currentRestaurant.min_order) {
+        validationMessageElement.style.display = "none";
+    } else {
+        validationMessageElement.style.display = "block";
+        validationMessageElement.textContent = `
+        Minimum order of $${currentRestaurant.min_order.toFixed(2)} not met. Add $${(currentRestaurant.min_order - subtotal).toFixed(2)} 
+        to checkout.
+        `;
+    }
 }
 
 /**
@@ -307,6 +356,20 @@ function updateFinalOrderTotal() {
  */
 function getOrderItemDiv(index) {
     return orderedItemsContainer.querySelector(`#order-items > div[data-index="${index}"]`);
+}
+
+/**
+ * This function checks to see if any items have been added to be ordered
+ * It utilizes the orderedQuantity attribute of each Item
+ * @returns boolean - True if any Item has orderedQuantity > 0 else False
+ */
+function checkOrderedItem() {
+    for (let item of items) {
+        if (item.orderedQuantity > 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -334,6 +397,27 @@ function resetCategoryNamesList() {
  */
 function resetMenuContainer() {
     menuItemsContainer.innerHTML = "";
+}
+
+/**
+ * This function resets the order totals
+ */
+function resetOrderTotals() {
+    subtotal = 0;
+    tax = 0
+    deliveryFee = 0;
+    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
+    taxElement.textContent = `$${tax.toFixed(2)}`;
+    deliveryFeeElement.textContent = "$00.00";
+    validationMessageElement.style.display = "none";
+    orderTotalElement.textContent = `$00.00`;
+}
+
+/**
+ * This function resets the `#order-items` div by removing its innerHTML
+ */
+function clearOrderItems() {
+    orderedItemsContainer.innerHTML = "";
 }
 
 
