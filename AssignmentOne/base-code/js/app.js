@@ -10,13 +10,14 @@ let deliveryFeeHeader = document.getElementById("delivery-fee");
 
 let categoryNamesContainer = document.getElementById("category-names");
 let menuItemsContainer = document.getElementById("menu-container");
+let orderedItemsContainer = document.getElementById("order-items");
 
 let validationMessageElement = document.querySelector(".validation-message");
-let orderedItemsContainer = document.getElementById("order-items");
 let subtotalElement = document.getElementById("subtotal-line");
 let deliveryFeeElement = document.getElementById("delivery-fee-line");
 let taxElement = document.getElementById("tax-line");
 let orderTotalElement = document.getElementById("order-total-line");
+
 let submitBtnElement = document.querySelector(".submit-btn");
 
 // Javascript Variables
@@ -78,10 +79,11 @@ function initializeDropDown() {
         resetMenuContainer();
         clearOrderItems();
         resetOrderTotals();
-        
+
         initializeMainHeaders();
         initializeCategoryAndMenu();
         initializeOrderSummary();
+        initializeSubmitBtn();
     })
 }
 
@@ -101,7 +103,7 @@ function initializeMainHeaders() {
 }
 
 /**
- * This function displays the categories and menu items of the current selected restaurant
+ * This function initializes the Category and Menu columns with the current restaurants data
  */
 function initializeCategoryAndMenu() {
     let menuItemIndex = 0; // This maps each .menu-item div to its corresponding Item object in the list
@@ -123,10 +125,8 @@ function initializeCategoryAndMenu() {
 
 /**
  * This function initializes the event handlers for the .order-summary container
- * It additionally initializes the submit-btn
  */
 function initializeOrderSummary() {
-    initializeSubmitBtn();
     let menuItemContainers = menuItemsContainer.querySelectorAll(".menu-item");
     menuItemContainers.forEach((container) => {
         let addBtn = container.querySelector("img");
@@ -149,7 +149,7 @@ function initializeOrderSummary() {
  */
 function initializeSubmitBtn() {
     submitBtnElement.addEventListener("click", () => {
-        if (subtotal > currentRestaurant.min_order) {
+        if (subtotal >= currentRestaurant.min_order) {
             alert("Your Order Has Been Submitted")
             location.reload();
         } else {
@@ -264,7 +264,7 @@ function addOrderItemDiv(Item, index) {
     itemQuantityContainer.textContent = `Quantity: ${Item.orderedQuantity}`;
     let itemPriceContainer = document.createElement("span");
     itemPriceContainer.className = "item-total";
-    itemPriceContainer.textContent = `Price: $${Item.price.toFixed(2)}`;
+    itemPriceContainer.textContent = `Price: $${(Item.price * Item.orderedQuantity).toFixed(2)}`;
 
     let removeBtn = document.createElement("button");
     removeBtn.className = "btn remove-btn";
@@ -339,12 +339,14 @@ function updateFinalOrderTotal() {
     orderTotalElement.textContent = `$${finalOrderTotal.toFixed(2)}`;
     if (subtotal >= currentRestaurant.min_order) {
         validationMessageElement.style.display = "none";
+        submitBtnElement.style.display = "inline-block";
     } else {
         validationMessageElement.style.display = "block";
         validationMessageElement.textContent = `
         Minimum order of $${currentRestaurant.min_order.toFixed(2)} not met. Add $${(currentRestaurant.min_order - subtotal).toFixed(2)} 
         to checkout.
         `;
+        submitBtnElement.style.display = "none";
     }
 }
 
