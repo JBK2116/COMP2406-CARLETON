@@ -207,7 +207,7 @@ function createMenuItemDiv(menuItemName, menuItemPrice, menuItemDesc) {
 
     let buttonImage = document.createElement("img");
     buttonImage.alt = `add button img`;
-    buttonImage.src = "img/add.png";
+    buttonImage.src = "../images/add.png";
     innerDivButton.appendChild(buttonImage);
 
     menuItemDiv.appendChild(innerDivItemName);
@@ -270,7 +270,7 @@ function addOrderItemDiv(Item, index) {
     let removeBtnImage = document.createElement("img");
     removeBtnImage.alt = "item";
     removeBtnImage.class = "order-item-image";
-    removeBtnImage.src = "img/remove.png";
+    removeBtnImage.src = "../images/remove.png";
 
     removeBtn.appendChild(removeBtnImage);
 
