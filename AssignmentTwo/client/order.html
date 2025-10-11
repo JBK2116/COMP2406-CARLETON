@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Restaurant Order</title>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+<div id="header-container">
+    <header id="header">
+        <h1 id="header-h1">No Restaurant Selected</h1>
+    </header>
+    <div class="container">
+        <select id="drop-down">
+            <option value="">Select A Restaurant</option>
+        </select>
+    </div>
+</div>
+<div class="content">
+    <div id="restaurant-header">
+        <h2 class="main-header" id="restaurant-name">No Name</h2>
+        <h2 class="main-header" id="minimum-order">Minimum Order: $0</h2>
+        <h2 class="main-header" id="delivery-fee">Delivery Fee: $0</h2>
+    </div>
+    <div id="restaurant-columns">
+        <div class="column categories">
+            <div class="categories-sticky">
+                <h3 class="sub-header">Category</h3>
+                <div class="container category">
+                    <ul id="category-names">
+                        <!--
+                        <li><a href="#sample-cat">Samples</a></li>
+                        -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="column menu">
+            <h3 class="sub-header">Menu</h3>
+            <div id="menu-container">
+                <!--
+                <div class="menu-category" id="sample-cat">
+                    <h4 class="category-header">Samples</h4>
+                    <div class="menu-item">
+                        <p class="item-info">Sample Appetizer</p>
+                        <button class="btn">
+                            <img alt="add button img" src="images/add.png">
+                        </button>
+                    </div>
+                </div>
+                -->
+            </div>
+        </div>
+        <div class="column order-summary">
+            <div class="order-sticky">
+                <h3 class="sub-header">Order Summary</h3>
+                <div class="validation-message"></div>
+                <div id="order-items">
+                    <!--                    <div class="order-item">-->
+                    <!--                        <div class="order-item-details">-->
+                    <!--                            <span class="item-name">Doritos Tasty and Amazing</span>-->
+                    <!--                            <span class="item-quantity">Qty: 2</span>-->
+                    <!--                            <span class="item-total">$15.98</span>-->
+                    <!--                        </div>-->
+                    <!--                        <button class="btn">-->
+                    <!--                            <img alt="remove button img" class="order-item-image" src="images/remove.png">-->
+                    <!--                        </button>-->
+                    <!--                    </div>-->
+                </div>
+                <div id="order-totals">
+                    <div class="total-line">
+                        <span>Subtotal:</span>
+                        <span id="subtotal-line">$00.00</span>
+                    </div>
+                    <div class="total-line">
+                        <span>Delivery Fee:</span>
+                        <span id="delivery-fee-line">$00.00</span>
+                    </div>
+                    <div class="total-line">
+                        <span>Tax:</span>
+                        <span id="tax-line">$00.00</span>
+                    </div>
+                    <div class="total-line total-final">
+                        <span>Total:</span>
+                        <span id="order-total-line">$00.00</span>
+                    </div>
+                </div>
+                <button class="submit-btn" role="button">Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="app.js" type="module"></script>
+</body>
+</html>
