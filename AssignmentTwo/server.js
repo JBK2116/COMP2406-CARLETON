@@ -20,13 +20,17 @@ const server = http.createServer((req, res) => {
         if (req.url === '/') {
             fs.readFile('./index.html', 'utf-8', (err, data) => {
                 if (err) {
-                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.writeHead(500, {'Content-Type': 'text/plain'});
                     res.end('Error loading home page.');
                     return;
                 }
-                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.writeHead(200, {'Content-Type': 'text/html'});
                 res.end(data);
             });
+            return;
+        } else if (req.url === '/restaurants/') {
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(restaurantObjs));
             return;
         }
 
@@ -45,15 +49,15 @@ const server = http.createServer((req, res) => {
 
         fs.readFile(filePath, extname === '.png' ? null : 'utf-8', (err, data) => {
             if (err) {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.writeHead(404, {'Content-Type': 'text/plain'});
                 res.end('File not found.');
                 return;
             }
-            res.writeHead(200, { 'Content-Type': contentType });
+            res.writeHead(200, {'Content-Type': contentType});
             res.end(data);
         });
     } else {
-        res.writeHead(405, { 'Content-Type': 'text/plain' });
+        res.writeHead(405, {'Content-Type': 'text/plain'});
         res.end('Method Not Allowed');
     }
 });

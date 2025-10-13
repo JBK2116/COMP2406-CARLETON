@@ -44,6 +44,7 @@ class Item {
  * The "change" event listener handles detecting the current selected restaurant.
  */
 function initializeDropDown() {
+    getRestaurants(); // just testing
     for (let r in restaurants) {
         let option = document.createElement("option")
         option.value = restaurants[r].name;
@@ -418,6 +419,22 @@ function resetOrderTotals() {
  */
 function clearOrderItems() {
     orderedItemsContainer.innerHTML = "";
+}
+
+/**
+ * This function sends a GET request to
+ * retrieve all restaurant objects from the server.
+ *
+ * - Note: All restaurant info is stored in the `items` array
+ */
+function getRestaurants() {
+    let urlPath = "/restaurants/";
+    fetch(urlPath).then(response => {
+        response.json().then(data => {
+            items = data;
+            console.log(items)
+        })
+    })
 }
 
 window.addEventListener("DOMContentLoaded", initializeDropDown)
