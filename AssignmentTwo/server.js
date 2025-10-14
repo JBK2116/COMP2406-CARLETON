@@ -15,9 +15,16 @@ readRestaurantInfo();
 
 // block executed on every incoming request
 const server = http.createServer((req, res) => {
+    const parsedUrl = urlLib.parse(req.url, true);
+    /*
+    splits the `parsedUrl` by `/` then filters out all empty spots in the array
+    example: /restaurants/id -> ["restaurants", "id]
+     */
+    const pathParts = parsedUrl.pathname.split('/').filter(part => part);
+
     if (req.method === 'GET') {
         // ! Add additional url routing below
-        if (req.url === '/') {
+        if (pathParts.length === 0) {
             fs.readFile('./index.html', 'utf-8', (err, data) => {
                 if (err) {
                     res.writeHead(500, {'Content-Type': 'text/plain'});
@@ -28,9 +35,16 @@ const server = http.createServer((req, res) => {
                 res.end(data);
             });
             return;
-        } else if (req.url === '/restaurants/') {
+        } else if (pathParts[0] === "restaurants" && pathParts.length === 1) {
+            // path equivalent to `/restaurants
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.end(JSON.stringify(restaurantObjs));
+            return;
+        } else if (pathParts[0] === "restaurants" && !isNaN(pathParts[1]) && pathParts.length === 2) {
+            // path equivalent to `/restaurant/:id`
+            let restaurant = restaurantObjs.find(r => (r.id === Number(pathParts[1])));
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(restaurant));
             return;
         }
 
@@ -67,6 +81,18 @@ server.listen(port, host, () => {
     console.log(`Server running at http://${host}:${port}`);
     console.log(restaurantObjs);
 })
+
+/**
+ * This object represents a singular Item in a restaurants menu category
+  */
+class Item {
+    constructor(name, description, price) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.orderedQuantity = 0;
+    }
+}
 
 /**
  * Reads all the .json files in the restaurants dir, converts them into JSON objects and pushes them

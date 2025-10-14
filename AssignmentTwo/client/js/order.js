@@ -27,14 +27,6 @@ let subtotal = 0;
 let deliveryFee = 0;
 let tax = 0;
 
-class Item {
-    constructor(name, description, price) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.orderedQuantity = 0;
-    }
-}
 
 /**
  * This function initializes the drop-down element by appending 3 new options to it and

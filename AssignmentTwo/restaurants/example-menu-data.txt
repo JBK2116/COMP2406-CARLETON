@@ -1,7 +1,7 @@
 {
   name: "The Restaurant's Name",
   min_order: 20, //The minimum order amount required to place an order for this restaurant
-  delivery_charge: 5, //The delivery charge for this restaurant
+  delivery_fee: 5, //The delivery charge for this restaurant
   menu: {
     "Category #1": {
       0: {
