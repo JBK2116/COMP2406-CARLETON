@@ -12,14 +12,17 @@ const urlLib = require('url');
 const path = require('path');
 
 // in-memory variables
-const restaurantObjs = [];
+const restaurants = [];
+const stats = [];
 
 // custom objects
 class RestaurantStat {
     constructor(restaurant) {
+        this.id = restaurant.id;
         this.restaurant = restaurant;
-        this.averageOrderTotal;
-        this.orderCount;
+        this.totalOrderAmount = 0; // tracks the total money received from orders (subtotal %10 tax + delivery fee)
+        this.orderCount = 0; // tracks total amount of orders received
+        this.orderedItems = new Map(); // tracks the amount of units sold per item in the menu
     }
 }
 // Load restaurant info before server startup
@@ -50,11 +53,11 @@ const server = http.createServer((req, res) => {
         } else if (pathParts[0] === "restaurants" && pathParts.length === 1) {
             // path equivalent to `/restaurants
             res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify(restaurantObjs));
+            res.end(JSON.stringify(restaurants));
             return;
         } else if (pathParts[0] === "restaurants" && !isNaN(pathParts[1]) && pathParts.length === 2) {
             // path equivalent to `/restaurant/:id`
-            let restaurant = restaurantObjs.find(r => (r.id === Number(pathParts[1])));
+            let restaurant = restaurants.find(r => (r.id === Number(pathParts[1])));
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.end(JSON.stringify(restaurant));
             return;
@@ -92,12 +95,28 @@ const server = http.createServer((req, res) => {
         req.on("end", () => {
             // entire raw body has been received
             try {
-                const newOrder = JSON.parse(body);
-                const restaurant = restaurantObjs.find((r) => r.id === newOrder.restaurantId);
-                for (item of newOrder.items) {
-                    // each `item` is a CartItem object
-                    // TODO: Implement This
+                const order = JSON.parse(body);
+                const restaurant = restaurants.find((r) => r.id === order.restaurantId);
+
+                let stat = stats.find((r) => r.id === restaurant.id);
+                if (!stat) {
+                    stat = new RestaurantStat(restaurant);
+                    stats.push(stat);
                 }
+                let orderSubtotal = 0;
+                let taxPercent = 0.10;
+                for (const item of order.items) {
+                    // each `item` is a CartItem object
+                    orderSubtotal += item.price*item.orderedQuantity;
+                    stat.orderedItems.set(item.id, (stat.orderedItems.get(item.id) ?? 0) + item.orderedQuantity);
+                }
+                // update stat values
+                let orderTotal = orderSubtotal + stat.restaurant.delivery_fee + (orderSubtotal*taxPercent);
+                stat.totalOrderAmount += orderTotal;
+                stat.orderCount++;
+                // response
+                console.log(stat.totalOrderAmount);
+                console.log(stat.orderCount);
                 res.writeHead(201)
                 res.end();
             } catch (error) {
@@ -129,7 +148,7 @@ function readRestaurantInfo() {
         files.forEach(file => {
             if (path.extname(file) !== '.json') return;
             const data = fs.readFileSync(`${restaurantsDirPath}/${file}`, {encoding: "utf-8"});
-            restaurantObjs.push(JSON.parse(data));
+            restaurants.push(JSON.parse(data));
         });
     } catch (err) {
         console.log(`Error reading restaurant files: ${err}`);

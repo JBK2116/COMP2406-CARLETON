@@ -392,7 +392,7 @@ function updateOrderTotals(cartItem, add) {
     } else {
         subtotal -= cartItem.price;
     }
-    tax = subtotal * 0.13;
+    tax = subtotal * 0.10;
     subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
     taxElement.textContent = `$${tax.toFixed(2)}`;
     updateFinalOrderTotal();
