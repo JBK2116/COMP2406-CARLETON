@@ -113,10 +113,8 @@ async function submitOrder(orderDict) {
     try {
         const response = await fetch(urlPath, {
             method: "post", headers: {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(orderDict)
+                "Accept": "application/json", "Content-Type": "application/json"
+            }, body: JSON.stringify(orderDict)
         })
         if (!response.ok) {
             throw new Error(`Error occurred sending restaurant data (status: ${response.status})`);

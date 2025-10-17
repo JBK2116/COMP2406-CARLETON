@@ -27,6 +27,7 @@ class RestaurantStat {
         this.mostPopularItem;
     }
 }
+
 // Load restaurant info before server startup
 readRestaurantInfo();
 
@@ -67,7 +68,7 @@ const server = http.createServer((req, res) => {
         } else if (pathParts[0] === "statistics" && pathParts.length === 1) {
             // path equivalent to `/statistics`
             stats.forEach(stat => updateMostPopular(stat));
-            const html = pug.renderFile("client/pug/statistics.pug", { stats: stats });
+            const html = pug.renderFile("client/pug/statistics.pug", {stats: stats});
             res.writeHead(200, {'Content-Type': 'text/html'});
             res.end(html);
             return;
@@ -75,7 +76,6 @@ const server = http.createServer((req, res) => {
 
         // Serve extra static files
         let filePath = '.' + req.url;
-        console.log('Trying to serve:', filePath); // Add this
         const extname = path.extname(filePath).toLowerCase();
         const mimeTypes = {
             '.html': 'text/html',
@@ -117,16 +117,14 @@ const server = http.createServer((req, res) => {
                 let taxPercent = 0.10;
                 for (const item of order.items) {
                     // each `item` is a CartItem object
-                    orderSubtotal += item.price*item.orderedQuantity;
+                    orderSubtotal += item.price * item.orderedQuantity;
                     stat.orderedItems.set(item.itemName, (stat.orderedItems.get(item.itemName) ?? 0) + item.orderedQuantity);
                 }
                 // update stat values
-                let orderTotal = orderSubtotal + stat.restaurant.delivery_fee + (orderSubtotal*taxPercent);
+                let orderTotal = orderSubtotal + stat.restaurant.delivery_fee + (orderSubtotal * taxPercent);
                 stat.totalOrderAmount += orderTotal;
                 stat.orderCount++;
                 // response
-                console.log(stat.totalOrderAmount);
-                console.log(stat.orderCount);
                 res.writeHead(201)
                 res.end();
             } catch (error) {
