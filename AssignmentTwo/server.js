@@ -1,15 +1,27 @@
 // run server via 'node server.js'
-const restaurantObjs = [];
 
+// url definitions
 const port = 8000;
 const host = "localhost";
 const restaurantsDirPath = "./restaurants";
 
+// required packages
 const http = require('http');
 const fs = require('fs');
 const urlLib = require('url');
 const path = require('path');
 
+// in-memory variables
+const restaurantObjs = [];
+
+// custom objects
+class RestaurantStat {
+    constructor(restaurant) {
+        this.restaurant = restaurant;
+        this.averageOrderTotal;
+        this.orderCount;
+    }
+}
 // Load restaurant info before server startup
 readRestaurantInfo();
 
@@ -70,6 +82,30 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, {'Content-Type': contentType});
             res.end(data);
         });
+    } else if (req.method === "POST") {
+        // currently only handles one endpoint so default to that endpoint
+        // endpoint is /restaurants/:id/orders
+        let body = "";
+        req.on("data", chunk => {
+            body += chunk.toString();
+        })
+        req.on("end", () => {
+            // entire raw body has been received
+            try {
+                const newOrder = JSON.parse(body);
+                const restaurant = restaurantObjs.find((r) => r.id === newOrder.restaurantId);
+                for (item of newOrder.items) {
+                    // each `item` is a CartItem object
+                    // TODO: Implement This
+                }
+                res.writeHead(201)
+                res.end();
+            } catch (error) {
+                res.writeHead(400, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({error: 'Invalid JSON'}));
+            }
+        })
+
     } else {
         res.writeHead(405, {'Content-Type': 'text/plain'});
         res.end('Method Not Allowed');
@@ -79,20 +115,7 @@ const server = http.createServer((req, res) => {
 // block executed on server startup
 server.listen(port, host, () => {
     console.log(`Server running at http://${host}:${port}`);
-    console.log(restaurantObjs);
 })
-
-/**
- * This object represents a singular Item in a restaurants menu category
-  */
-class Item {
-    constructor(name, description, price) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.orderedQuantity = 0;
-    }
-}
 
 /**
  * Reads all the .json files in the restaurants dir, converts them into JSON objects and pushes them

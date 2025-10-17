@@ -101,6 +101,33 @@ async function getRestaurant(id) {
     }
 }
 
+/**
+ * Submits an order to `server.js`
+ *
+ * @param orderDict - order dict to be submitted
+ * @returns {boolean} - true if the post was successful, false otherwise
+ */
+async function submitOrder(orderDict) {
+    let urlPath = `${BASEURL}restaurants/${orderDict.restaurantId}/orders`;
+
+    try {
+        const response = await fetch(urlPath, {
+            method: "post", headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(orderDict)
+        })
+        if (!response.ok) {
+            throw new Error(`Error occurred sending restaurant data (status: ${response.status})`);
+        }
+        return true
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 /*
 Below are the main event listeners
  */
@@ -167,6 +194,18 @@ function removeBtnEvenListener() {
         }
     });
 }
+
+submitBtnElement.addEventListener("click", () => {
+    if (cartItems.length === 0) {
+        return;
+    }
+    const order = {
+        restaurantId: currentRestaurant.id, items: [],
+    }
+    order.items.push(...cartItems); // adds all objects in cartItems to the order.items array
+    submitOrder(order);
+    window.location.reload(); // reload the page to start fresh
+})
 
 /*
 Below are the UI updating functions
