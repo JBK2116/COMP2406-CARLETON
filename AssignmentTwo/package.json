@@ -1,0 +1,15 @@
+{
+  "name": "assignmenttwo",
+  "version": "1.0.0",
+  "description": "Assignment Two project by Jovani Badinga",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Jovani Badinga",
+  "license": "ISC",
+  "dependencies": {
+    "pug": "^3.0.3"
+  }
+}

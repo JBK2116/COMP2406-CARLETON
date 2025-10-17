@@ -10,6 +10,7 @@ const http = require('http');
 const fs = require('fs');
 const urlLib = require('url');
 const path = require('path');
+const pug = require('pug');
 
 // in-memory variables
 const restaurants = [];
@@ -23,6 +24,7 @@ class RestaurantStat {
         this.totalOrderAmount = 0; // tracks the total money received from orders (subtotal %10 tax + delivery fee)
         this.orderCount = 0; // tracks total amount of orders received
         this.orderedItems = new Map(); // tracks the amount of units sold per item in the menu
+        this.mostPopularItem;
     }
 }
 // Load restaurant info before server startup
@@ -40,6 +42,7 @@ const server = http.createServer((req, res) => {
     if (req.method === 'GET') {
         // ! Add additional url routing below
         if (pathParts.length === 0) {
+            // path equivalent to `/`
             fs.readFile('./index.html', 'utf-8', (err, data) => {
                 if (err) {
                     res.writeHead(500, {'Content-Type': 'text/plain'});
@@ -61,11 +64,18 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, {'Content-Type': 'application/json'});
             res.end(JSON.stringify(restaurant));
             return;
+        } else if (pathParts[0] === "statistics" && pathParts.length === 1) {
+            // path equivalent to `/statistics`
+            stats.forEach(stat => updateMostPopular(stat));
+            const html = pug.renderFile("client/pug/statistics.pug", { stats: stats });
+            res.writeHead(200, {'Content-Type': 'text/html'});
+            res.end(html);
+            return;
         }
-
 
         // Serve extra static files
         let filePath = '.' + req.url;
+        console.log('Trying to serve:', filePath); // Add this
         const extname = path.extname(filePath).toLowerCase();
         const mimeTypes = {
             '.html': 'text/html',
@@ -108,7 +118,7 @@ const server = http.createServer((req, res) => {
                 for (const item of order.items) {
                     // each `item` is a CartItem object
                     orderSubtotal += item.price*item.orderedQuantity;
-                    stat.orderedItems.set(item.id, (stat.orderedItems.get(item.id) ?? 0) + item.orderedQuantity);
+                    stat.orderedItems.set(item.itemName, (stat.orderedItems.get(item.itemName) ?? 0) + item.orderedQuantity);
                 }
                 // update stat values
                 let orderTotal = orderSubtotal + stat.restaurant.delivery_fee + (orderSubtotal*taxPercent);
@@ -153,4 +163,22 @@ function readRestaurantInfo() {
     } catch (err) {
         console.log(`Error reading restaurant files: ${err}`);
     }
+}
+
+/**
+ * Updates the mostPopularItem field of the provided stat object
+ * mostPopularItem is the item with the highest value in `orderedItems` map
+ * @param stat - RestaurantStat object
+ * @returns {void} - void
+ */
+function updateMostPopular(stat) {
+    let mostPopularItem = "";
+    let maxValue = 0;
+    for (const [key, value] of stat.orderedItems.entries()) {
+        if (value > maxValue) {
+            maxValue = value;
+            mostPopularItem = key;
+        }
+    }
+    stat.mostPopularItem = mostPopularItem;
 }

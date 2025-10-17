@@ -1,0 +1,33 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        title Restaurant Statistics
+        link(href="client/css/stats.css" rel="stylesheet")
+    body
+        header
+            .header-link
+                a#home-page-link(href="/") Home
+            .header-link
+                a#order-page-link(href="client/html/order.html") Order
+            .header-link
+                a#restaurant-stat-links(href="/statistics") Restaurant Statistics
+
+        .content
+            h1.page-title Restaurant Statistics
+
+            .stats-container
+                each stat in stats
+                    .stat-card
+                        h2.restaurant-name= stat.restaurant.name
+                        .stat-info
+                            .stat-item
+                                span.stat-label Total Orders:
+                                span.stat-value= stat.orderCount
+                            .stat-item
+                                span.stat-label Average Order Total:
+                                span.stat-value= `$${(stat.totalOrderAmount / stat.orderCount).toFixed(2)}`
+                            .stat-item
+                                span.stat-label Most Popular Item:
+                                span.stat-value= stat.mostPopularItem
